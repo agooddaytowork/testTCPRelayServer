@@ -21,8 +21,8 @@ void fountainServer::newConnectionHandler()
 {
 
     clientList.append(tcpServer->nextPendingConnection());
-     in.setDevice(clientList.last());
-     in.setVersion(QDataStream::Qt_5_8);
+     dataToFountainDevice.setDevice(clientList.last());
+     dataToFountainDevice.setVersion(QDataStream::Qt_5_8);
 
     connect(clientList.last(), SIGNAL(readyRead()),this,SLOT(readyReadFromUserHandler()));
 
@@ -32,10 +32,10 @@ void fountainServer::newConnectionHandler()
 void fountainServer::readyReadFromUserHandler()
 {
 
-    in.startTransaction();
+    dataToFountainDevice.startTransaction();
 
     QByteArray nextFortune;
-    in >> nextFortune;
+    dataToFountainDevice >> nextFortune;
 
 #if fountainServerForwarder
     emit toFountainDevice(nextFortune);
@@ -61,8 +61,8 @@ void fountainServer::fromFountainDeviceHandler()
 {
 
     QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
-    in.setDevice(readSocket);
-    in.setVersion(QDataStream::Qt_5_8);
+    dataToUser.setDevice(readSocket);
+    dataToUser.setVersion(QDataStream::Qt_5_8);
 
     connect(readSocket, SIGNAL(readyRead()),this,SLOT(readyReadFromFountainDeviceHandler()));
 
@@ -70,10 +70,10 @@ void fountainServer::fromFountainDeviceHandler()
 void fountainServer::readyReadFromFountainDeviceHandler()
 {
 
-    in.startTransaction();
+    dataToUser.startTransaction();
 
     QByteArray nextFortune;
-    in >> nextFortune;
+    dataToUser >> nextFortune;
 
     foreach (QTcpSocket* theClient, clientList) {
             QByteArray block;

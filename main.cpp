@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
     QTcpSocket *aFountainDevice = new QTcpSocket();
 
-    aFountainDevice->connectToHost("10.0.0.2",8080,QIODevice::ReadWrite);
+    aFountainDevice->connectToHost("10.0.0.2",8080);
 
     QObject::connect(&aServer,&fountainServer::toFountainDevice,[=](const QByteArray &data){
 
@@ -20,9 +20,8 @@ int main(int argc, char *argv[])
         out.setVersion(QDataStream::Qt_5_8);
         out << data;
         aFountainDevice->write(block);
-
     });
 
-    QObject::connect(aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::readyReadFromFountainDeviceHandler);
+    QObject::connect(aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::fromFountainDeviceHandler);
     return a.exec();
 }
