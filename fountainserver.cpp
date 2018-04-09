@@ -21,17 +21,16 @@ void fountainServer::newConnectionHandler()
 {
 
     clientList.append(tcpServer->nextPendingConnection());
-     dataToFountainDevice.setDevice(clientList.last());
-     dataToFountainDevice.setVersion(QDataStream::Qt_5_8);
-
     connect(clientList.last(), SIGNAL(readyRead()),this,SLOT(readyReadFromUserHandler()));
 
-
+    emit receivedNewConnectionFromUser();
 }
 
 void fountainServer::readyReadFromUserHandler()
 {
-
+    QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
+    dataToFountainDevice.setDevice(readSocket);
+    dataToFountainDevice.setVersion(QDataStream::Qt_5_8);
     dataToFountainDevice.startTransaction();
 
     QByteArray nextFortune;
@@ -60,16 +59,19 @@ void fountainServer::fromSerialHandler(const QByteArray &data)
 void fountainServer::fromFountainDeviceHandler()
 {
 
-    QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
-    dataToUser.setDevice(readSocket);
-    dataToUser.setVersion(QDataStream::Qt_5_8);
+//    QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
+//    dataToUser.setDevice(readSocket);
+//    dataToUser.setVersion(QDataStream::Qt_5_8);
 
-    connect(readSocket, SIGNAL(readyRead()),this,SLOT(readyReadFromFountainDeviceHandler()));
+//    connect(readSocket, SIGNAL(readyRead()),this,SLOT(readyReadFromFountainDeviceHandler()));
 
 }
 void fountainServer::readyReadFromFountainDeviceHandler()
 {
 
+    QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
+    dataToUser.setDevice(readSocket);
+    dataToUser.setVersion(QDataStream::Qt_5_8);
     dataToUser.startTransaction();
 
     QByteArray nextFortune;

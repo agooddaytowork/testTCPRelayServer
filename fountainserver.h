@@ -42,7 +42,7 @@ private slots:
 
 
 signals:
-
+    void receivedNewConnectionFromUser();
     void toSerial(QByteArray);
     void toFountainDevice(QByteArray);
 
