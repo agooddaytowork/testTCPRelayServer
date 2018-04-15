@@ -34,6 +34,8 @@ void fountainServer::newConnectionHandler()
 
 void fountainServer::readyReadFromUserHandler()
 {
+
+    qDebug() << "Enter readyReadFromUserHandler";
     QTcpSocket* readSocket = dynamic_cast<QTcpSocket*>(sender());
     if(readSocket)
     {
@@ -44,15 +46,16 @@ void fountainServer::readyReadFromUserHandler()
 
     dataToFountainDevice.startTransaction();
 
-    QByteArray nextFortune;
+    QByteArray out;
+
 
     if(!dataToFountainDevice.commitTransaction()) return;
-    dataToFountainDevice >> nextFortune;
+    dataToFountainDevice >> out;
 
 
 
 #if fountainServerForwarder
-    emit toFountainDevice(nextFortune);
+    emit toFountainDevice(out);
 #endif
 
     if(clientList.last()->bytesAvailable() > 0) emit stillAvailableDataFromUser();
