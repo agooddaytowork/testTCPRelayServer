@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     fountainServer aServer;
 
-    QTcpSocket *aFountainDevice;
+    QTcpSocket *aFountainDevice = new QTcpSocket();
 
     bool fountainDeviceStatus = false;
 
