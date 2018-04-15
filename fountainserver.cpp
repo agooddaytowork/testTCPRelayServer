@@ -17,6 +17,7 @@ fountainServer::fountainServer(QObject *parent): QObject(parent), tcpSocket(new 
     }
 
     connect(this,SIGNAL(stillAvailableDataFromUser()),this,SLOT(readyReadFromUserHandler()));
+    connect(this,SIGNAL(requestSendDataToClient(QByteArray)),this,SLOT(sendDataToClient(QByteArray)));
 }
 
 void fountainServer::newConnectionHandler()
@@ -86,15 +87,16 @@ void fountainServer::fromSerialHandler(const QByteArray &data)
 void fountainServer::fromFountainDeviceHandler()
 {
 
-    //    QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
-    //    dataToUser.setDevice(readSocket);
-    //    dataToUser.setVersion(QDataStream::Qt_5_8);
+        QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
+        dataToUser.setDevice(readSocket);
+        dataToUser.setVersion(QDataStream::Qt_5_8);
 
-    //    connect(readSocket, SIGNAL(readyRead()),this,SLOT(readyReadFromFountainDeviceHandler()));
+        connect(readSocket, SIGNAL(readyRead()),this,SLOT(readyReadFromFountainDeviceHandler()));
 
 }
 void fountainServer::readyReadFromFountainDeviceHandler()
 {
+
 
     QTcpSocket* readSocket = dynamic_cast<QTcpSocket*>(sender());
 
@@ -106,18 +108,27 @@ void fountainServer::readyReadFromFountainDeviceHandler()
     dataToUser.startTransaction();
 
     QByteArray nextFortune;
+    if(!dataToUser.commitTransaction()) return;
     dataToUser >> nextFortune;
 
-    foreach (QTcpSocket* theClient, clientList) {
-        QByteArray block;
-        QDataStream out(&block, QIODevice::WriteOnly);
-        out.setVersion(QDataStream::Qt_5_8);
-        out << nextFortune;
-        theClient->write(block);
-    }
+    emit requestSendDataToClient(nextFortune);
+
 
     if(readSocket && readSocket->bytesAvailable() >0)
     {
         readyReadFromFountainDeviceHandler();
+    }
+}
+
+void fountainServer::sendDataToClient(const QByteArray &data)
+{
+
+    qDebug() << "client List lenght: " + QString::number(clientList.length());
+    foreach (QTcpSocket* theClient, clientList) {
+        QByteArray block;
+        QDataStream out(&block, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_5_8);
+        out << data;
+        theClient->write(block);
     }
 }

@@ -39,6 +39,8 @@ public slots:
 private slots:
     void readyReadFromUserHandler();
     void clientDisconnectedHander();
+    void sendDataToClient(const QByteArray &data);
+
 
 
 
@@ -47,6 +49,7 @@ signals:
     void toSerial(QByteArray);
     void toFountainDevice(QByteArray);
     void stillAvailableDataFromUser();
+    void requestSendDataToClient(const QByteArray &data);
 
 };
 

@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
         qDebug() << "Disconneceted";
         fountainDeviceStatus = false;
+
     });
 
     QObject::connect(aFountainDevice,&QTcpSocket::connected,[&](){
@@ -34,9 +35,8 @@ int main(int argc, char *argv[])
         if(fountainDeviceStatus == false)
         {
             qDebug() << "receivedNewConnectionFromUser + device not open";
-
             aFountainDevice->connectToHost("10.0.0.2",8080);
-            QObject::connect(aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::readyReadFromFountainDeviceHandler);
+//            QObject::connect(aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::readyReadFromFountainDeviceHandler);
 
         }
     });
@@ -46,9 +46,7 @@ int main(int argc, char *argv[])
         qDebug() << "toFountainDevice + before checking device";
         if(fountainDeviceStatus == false)
         {
-            qDebug() << "user Request + device not open";
             aFountainDevice->connectToHost("10.0.0.2",8080);
-            QObject::connect(aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::readyReadFromFountainDeviceHandler);
 
         }
         QByteArray block;
@@ -58,6 +56,8 @@ int main(int argc, char *argv[])
         aFountainDevice->write(block);
     });
 
-    QObject::connect(aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::readyReadFromFountainDeviceHandler);
+//    QObject::connect(aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::readyReadFromFountainDeviceHandler);
+    QObject::connect(aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::fromFountainDeviceHandler);
+
     return a.exec();
 }
