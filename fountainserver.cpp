@@ -31,7 +31,7 @@ void fountainServer::newConnectionHandler()
 
 void fountainServer::readyReadFromUserHandler()
 {
-    QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
+    QTcpSocket* readSocket = dynamic_cast<QTcpSocket*>(sender());
     if(readSocket)
     {
         dataToFountainDevice.setDevice(readSocket);
@@ -86,7 +86,7 @@ void fountainServer::fromFountainDeviceHandler()
 void fountainServer::readyReadFromFountainDeviceHandler()
 {
 
-    QTcpSocket* readSocket = qobject_cast<QTcpSocket*>(sender());
+    QTcpSocket* readSocket = dynamic_cast<QTcpSocket*>(sender());
 
     if(readSocket)
     {
