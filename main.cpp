@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
             qDebug() << "receivedNewConnectionFromUser + device not open";
 
             aFountainDevice.connectToHost("10.0.0.2",8080);
+            QObject::connect(&aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::readyReadFromFountainDeviceHandler);
 
         }
     });
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
         {
             qDebug() << "user Request + device not open";
             aFountainDevice.connectToHost("10.0.0.2",8080);
+            QObject::connect(&aFountainDevice,&QTcpSocket::readyRead,&aServer,&fountainServer::readyReadFromFountainDeviceHandler);
 
         }
         QByteArray block;
