@@ -26,6 +26,9 @@ void fountainServer::newConnectionHandler()
     connect(clientList.last(), SIGNAL(readyRead()),this,SLOT(readyReadFromUserHandler()));
     connect(clientList.last(),SIGNAL(disconnected()),this,SLOT(clientDisconnectedHander()));
 
+    dataToFountainDevice.setDevice(clientList.last());
+    dataToFountainDevice.setVersion(QDataStream::Qt_5_8);
+
     emit receivedNewConnectionFromUser();
 }
 
@@ -35,14 +38,18 @@ void fountainServer::readyReadFromUserHandler()
     if(readSocket)
     {
         dataToFountainDevice.setDevice(readSocket);
-        dataToFountainDevice.setVersion(QDataStream::Qt_5_8);
+
     }
 
 
     dataToFountainDevice.startTransaction();
 
     QByteArray nextFortune;
+
+    if(!dataToFountainDevice.commitTransaction()) return;
     dataToFountainDevice >> nextFortune;
+
+
 
 #if fountainServerForwarder
     emit toFountainDevice(nextFortune);
